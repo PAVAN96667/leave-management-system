@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+enum LeaveStatus {
+  DRAFT
+  PENDING_MANAGER
+  MANAGER_APPROVED
+  PENDING_ADMIN
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model User {
+  id          Int               @id @default(autoincrement())
+  name        String
+  email       String            @unique
+  password    String
+  role        Role              @default(USER)
+  managerId   Int?
+  manager     User?             @relation("UserManager", fields: [managerId], references: [id])
+  reportees   User[]            @relation("UserManager")
+  avatar      String?
+  createdAt   DateTime          @default(now())
+  leaves      Leave[]
+  allocations LeaveAllocation[]
+}
+
+model LeaveType {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  description String?
+  maxDays     Int               @default(0)
+  createdAt   DateTime          @default(now())
+  leaves      Leave[]
+  allocations LeaveAllocation[]
+}
+
+model LeaveAllocation {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  user          User      @relation(fields: [userId], references: [id])
+  leaveTypeId   Int
+  leaveType     LeaveType @relation(fields: [leaveTypeId], references: [id])
+  allocatedDays Int
+  usedDays      Int       @default(0)
+  year          Int
+  createdAt     DateTime  @default(now())
+
+  @@unique([userId, leaveTypeId, year])
+}
+
+model Leave {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  leaveTypeId Int
+  leaveType   LeaveType   @relation(fields: [leaveTypeId], references: [id])
+  reason      String
+  startDate   DateTime
+  endDate     DateTime
+  status      LeaveStatus @default(PENDING_MANAGER)
+  rejectedReason String?
+  approvedBy  Int?
+  createdAt   DateTime    @default(now())
+}
