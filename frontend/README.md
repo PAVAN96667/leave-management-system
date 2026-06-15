@@ -1,26 +1,13 @@
-# Leave Management System - Backend
+# Leave Management System - Frontend
 
-Built with NestJS and TypeScript. This is the backend API server for the Leave Management System.
+Built with Next.js 16, TypeScript, and Tailwind CSS. This is the frontend for the Leave Management System.
 
 ## Tech Stack
 
-- Framework: NestJS with TypeScript
-- Database: PostgreSQL
-- ORM: Prisma 6
-- Authentication: JWT
-- Password Hashing: bcryptjs
-
-## Roles
-
-Admin can create users, create leave types, allocate leave balances, view all leaves, approve or reject any leave, and apply for their own leave.
-
-Manager can view and approve or reject their team leave requests, apply for their own leave, and view their own leave balance.
-
-Employee can view their leave balance, apply for leave, view their request status, and cancel a pending leave request.
-
-## Leave Workflow
-
-Employee applies for leave. Status becomes Pending Approval. Manager or Admin approves or rejects. If approved the leave balance is automatically deducted. If rejected the reason is stored and shown to the employee.
+- Framework: Next.js 16
+- Language: TypeScript
+- Styling: Tailwind CSS
+- HTTP Client: Axios
 
 ## How to Run
 
@@ -28,75 +15,45 @@ Step 1 - Install dependencies
 
 npm install
 
-Step 2 - Create a .env file in the backend folder
+Step 2 - Start the development server
 
-DATABASE_URL=postgresql://your_username:your_password@localhost:5432/leave_management
-JWT_SECRET=leavemanagementsecretkey2026
+npm run dev
 
-Step 3 - Run database migration
+Frontend runs on http://localhost:3000
 
-npx prisma migrate dev
+Make sure the backend is running on http://localhost:3001 before using the frontend.
 
-Step 4 - Create the first admin user
+## Pages
 
-npx ts-node prisma/seed.ts
+- /login - Login page for all users
+- /register - Register page for new users
+- /dashboard/admin - Admin dashboard
+- /dashboard/manager - Manager dashboard
+- /dashboard/user - Employee dashboard
 
-Step 5 - Start the server
+## Admin Dashboard Sections
 
-npm run start:dev
+- Dashboard - Overview with stats and pending approvals
+- Leave Management - View all leaves and pending approvals
+- Employees - View all users and create new users
+- Leave Configuration - Create leave types, allocate leave balance
+- My Time Off - Admin can apply and manage their own leaves
 
-Server runs on http://localhost:3001
+## Manager Dashboard Sections
+
+- Dashboard - Overview with pending approvals count
+- Team Leaves - View pending approvals and full team leave history
+- My Time Off - Manager can apply and manage their own leaves
+
+## Employee Dashboard Sections
+
+- Dashboard - Overview with leave balance summary
+- My Time Off - View balance, apply for leave, and track requests
 
 ## Default Login
 
 Username: admin
 Password: admin
-
-## API Endpoints
-
-Authentication:
-- POST /auth/login
-- POST /auth/register
-
-Users:
-- GET /users/profile
-- GET /users (Admin only)
-- POST /users/create (Admin only)
-- DELETE /users/:id (Admin only)
-
-Leave:
-- GET /leave/types
-- POST /leave/type (Admin only)
-- POST /leave/allocate (Admin only)
-- GET /leave/allocations (Admin only)
-- GET /leave/all (Admin only)
-- GET /leave/my
-- GET /leave/my-allocations
-- POST /leave/apply
-- GET /leave/pending (Admin and Manager)
-- GET /leave/reportees (Manager only)
-- PATCH /leave/:id/approve (Admin and Manager)
-- PATCH /leave/:id/reject (Admin and Manager)
-- PATCH /leave/:id/cancel
-
-## Database Models
-
-User stores id, name, email, password, role, and the manager they report to.
-
-LeaveType stores id, name, description, and maximum days allowed per year.
-
-LeaveAllocation stores allocated days and used days for each user per leave type per year.
-
-Leave stores the request with user, leave type, reason, start date, end date, status, and rejection reason.
-
-## Key Features
-
-- JWT authentication
-- Role based access control for Admin, Manager, and Employee
-- Manager hierarchy where employees report to a specific manager
-- Leave balance tracking that updates automatically on approval
-- Approve or reject leaves with a reason
-- Cancel pending leave requests
 
 ## License
 
